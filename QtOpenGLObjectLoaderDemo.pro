@@ -4,7 +4,7 @@
 #
 #-------------------------------------------------
 
-QT       += core gui
+QT       += core gui opengl
 
 TARGET = QtOpenGLObjectLoaderDemo
 TEMPLATE = app
@@ -21,3 +21,10 @@ HEADERS  += loaderwindow.h \
 
 FORMS    += loaderwindow.ui \
     visualizerwindow.ui
+
+!win32 {
+    LIBS += -lglut -lGL -lGLU
+}
+
+RESOURCES += \
+    resources.qrc

@@ -12,10 +12,11 @@ class VisualizerWindow : public QMainWindow
     Q_OBJECT
     
 public:
-    explicit VisualizerWindow(QWidget *parent = 0);
+    explicit VisualizerWindow(QWidget *parent = 0, QString filename = "");
     ~VisualizerWindow();
     
 private:
+    QString filename;
     Ui::VisualizerWindow *ui;
 };
 

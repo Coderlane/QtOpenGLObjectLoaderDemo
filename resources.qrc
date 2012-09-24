@@ -1,0 +1,6 @@
+<RCC>
+    <qresource prefix="/">
+        <file>resources/kindle.OBJ</file>
+        <file>resources/monkey.obj</file>
+    </qresource>
+</RCC>

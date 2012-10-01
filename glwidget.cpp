@@ -6,6 +6,7 @@ GLWidget::GLWidget(QWidget *parent) : QGLWidget(parent)
     yRot = 0;
     zRot = 0;
     zoom = 0;
+    // Setup the timer (Main Loop)
     timer = new QTimer(this);
     timer->setInterval(60);
     connect(timer, SIGNAL(timeout()), this, SLOT(loop()));
@@ -14,6 +15,7 @@ GLWidget::GLWidget(QWidget *parent) : QGLWidget(parent)
 
 void GLWidget::loop()
 {
+    // Nothing to do here, just redraw
     updateGL();
 }
 
@@ -42,8 +44,10 @@ void GLWidget::paintGL()
     renderText( -9,  9 , 0, "File:" + fileName, QFont("Ubuntu", 30, 10, false));
     glPopMatrix();
 
+    // For Zooming
     glTranslated(0.0, 0.0, zoom);
 
+    // Rotate the screen if necessary and then draw the object from the list
     glPushMatrix();
     glRotated(xRot / 16.0, 1.0, 0.0, 0.0);
     glRotated(yRot / 16.0, 0.0, 1.0, 0.0);
@@ -60,6 +64,7 @@ void GLWidget::resizeGL(int width, int height)
     if(height == 0)
         height = 1;
     double ratio = (width>height?((double)width/(double)height):((double)height/(double)width));
+    // Setup the viewport for the new size
     glViewport(0, 0, width, height);
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
@@ -71,15 +76,16 @@ void GLWidget::resizeGL(int width, int height)
 
 void GLWidget::setupScene(QString fn)
 {
+   // Set the filename and start the timer
    fileName = fn;
    objectID = loadFile(fn);
    timer->start();
 }
-
 GLuint GLWidget::loadFile(QString fn)
 {
-    //mod.load("mini_obj.obj");
+    // Load the file
     mod.load(fn.toUtf8().constData());
+
     GLuint list = glGenLists(1);
     glNewList(list, GL_COMPILE);
     for(int i = 0; i < mod.faces.size(); i++)
@@ -109,18 +115,12 @@ GLuint GLWidget::loadFile(QString fn)
     glEndList();
     return list;
 }
-
-
 void GLWidget::drawObject(GLuint obj, float dx, float dy, float dz)
 {
     glPushMatrix();
     glTranslated(dx, dy, dz);
     glCallList(obj);
     glPopMatrix();
-}
-void GLWidget::setFileName(QString file)
-{
-    fileName = file;
 }
 
 void GLWidget::mousePressEvent(QMouseEvent *event)

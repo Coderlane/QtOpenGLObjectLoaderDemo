@@ -32,6 +32,12 @@ typedef struct _oGlVTN
 	int tex;
 	int norm;
 }oGlVTN;
+/*
+typedef struct _oGlMatInfo
+{
+    string materialName;
+
+};*/
 
 //face, these represent what actually gets drawn
 typedef struct _oGlFace

@@ -44,7 +44,8 @@ void GLWidget::paintGL()
 
 
     glPushMatrix();
-    glTranslated(0.0,0.0,0.0);
+    //glTranslated(0.0,0.0,0.0);
+    glTranslated(LightPosition[0],LightPosition[1], LightPosition[2]);
     glLightfv(GL_LIGHT1, GL_DIFFUSE,  LightDiffuse);
     glLightfv(GL_LIGHT1, GL_POSITION, LightPosition);
     glPopMatrix();
@@ -81,7 +82,7 @@ void GLWidget::resizeGL(int width, int height)
     glViewport(0, 0, width, height);
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
-    gluPerspective(30.0f,ratio,0.1f,500.0f);
+    gluPerspective(30.0f,ratio,0.1f,800.0f);
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
     glTranslated(0.0, -50.0, -250.0);

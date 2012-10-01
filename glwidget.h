@@ -11,8 +11,8 @@
 #include <QMessageBox>
 
 const GLfloat LightAmbient[]= { 0.5f, 0.5f, 0.5f, 0.0f };
-const GLfloat LightDiffuse[]= { 10.0f, 10.0f, 10.0f, 1.0f };
-const GLfloat LightPosition[]= {0.0f, 0.0f, 10.0f, 10.0f };
+const GLfloat LightDiffuse[]= { 1.0f, 0.0f, 1.0f, 1.0f };
+const GLfloat LightPosition[]= {0.0f, 0.0f, 1.0f, 0.0f };
 const GLfloat reflectance[4] = { 1.0f, 0.0f, 0.0f, 1.0f };
 
 

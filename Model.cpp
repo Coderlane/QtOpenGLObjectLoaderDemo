@@ -68,6 +68,8 @@ void oGlModel::load(string filename)
 			{
 				vector<string> faceVs = splitString(lineItems[i],'/');
 				oGlVTN vtn;
+                if(lineItems[i] == "")
+                    continue;
 				switch(faceVs.size())
 				{
 					case 3:
@@ -147,6 +149,11 @@ oGlVertex oGlModel::calcNormal(oGlVertex a, oGlVertex b, oGlVertex c)
     norm.x = (U.y * V.z) - (U.z * V.y);
     norm.y = (U.z * V.x) - (U.x * V.z);
     norm.z = (U.x * V.y) - (U.y * V.x);
+
+
+    //norm.x = (U.z * V.y) - (U.y * V.z);
+    //norm.y = (U.x * V.z) - (U.z * V.x);
+    //norm.z = (U.y * V.x) - (U.x * V.y);
 
     return norm;
 }

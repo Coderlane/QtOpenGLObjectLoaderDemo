@@ -97,11 +97,30 @@ GLuint GLWidget::loadFile(QString fn)
                 break;
         }
 
+        if(mod.faces[i].vtnPairs[0].norm > 0)
+        {
+            oGlVertex norm = mod.normalVectors[mod.faces[i].vtnPairs[0].norm-1];
+            glNormal3f(norm.x, norm.y, norm.z);
+        }
+
         for(int j = 0; j < mod.faces[i].vtnPairs.size(); j++)
         {
             //the info for the normals and textures is in the same spot, im just not using it right now
+
+
+
+            if(mod.faces[i].vtnPairs[j].tex > 0)
+            {
+                oGlVertex tex = mod.textureCoords[mod.faces[i].vtnPairs[j].tex-1];
+                glTexCoord3f(tex.x, tex.y, tex.z);
+            }
+
             oGlVertex vert = mod.vertexes[mod.faces[i].vtnPairs[j].vert-1];
             glVertex3f(vert.x,vert.y, vert.z);
+
+
+
+
         }
         glEnd();
     }

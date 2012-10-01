@@ -16,6 +16,8 @@ void oGlModel::load(string filename)
 	vector<string> lineItems;
 	ifstream objFile(filename.c_str());
 
+
+
 	while(objFile.good())
 	{
 		getline(objFile, line);

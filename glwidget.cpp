@@ -48,74 +48,41 @@ void GLWidget::resizeGL(int width, int height)
 
 void GLWidget::setupScene()
 {
-    objectID = loadFile(fileName);
+   objectID = loadFile(fileName);
 }
 
 
 GLuint GLWidget::loadFile(QString fn)
 {
-    bool loaded = false;
-    QString line;
-    QTextStream lineStream;
-    QFile file(fn);
-    QVector<Vertex> verti;
-    QVector<Triangle> triangleFaces;
-    QVector<Vertex> normals;
-    if(file.isOpen())
+    mod.load(fn.toUtf8().constData());
+    GLuint list = glGenLists(1);
+    glNewList(list, GL_COMPILE);
+    for(int i = 0; i < mod.faces.size(); i++)
     {
-
-        while (!file.atEnd())											// Start reading file data
+        switch(mod.faces[i].vtnPairs.size())
         {
-
-            line = file.readLine(99999999);
-            lineStream.setString(&line);
-            if(line.at(0) == 'v')
-            {
-                float x = 0, y = 0, z = 0;
-                line[0] = ' ';
-                lineStream >> x >> y >> z;
-                verti.append((struct Vertex) {x, y, z});
-            }
-            else if(line.at(0) == 'f')
-            {
-                line[0] = ' ';
-                int vertexNumber[4] = { 0, 0, 0 };
-                lineStream >> vertexNumber[0] >> vertexNumber[1] >> vertexNumber[2];
-                vertexNumber[0] -= 1;
-                vertexNumber[1] -= 1;
-                vertexNumber[2] -= 1;
-                triangleFaces.append((struct Triangle) {verti.at(vertexNumber[0]), verti.at(vertexNumber[1]), verti.at(vertexNumber[2])});
-                normals.append(calculateNormal(triangleFaces.last().a, triangleFaces.last().b, triangleFaces.last().c));
-            }
-            else
-            {
-                  // Do nothing
-            }
+            case 3:
+                glBegin(GL_TRIANGLES);
+                break;
+            case 4:
+                glBegin(GL_QUADS);
+                break;
+            case 5:
+                glBegin(GL_POLYGON);
+                break;
         }
-        loaded = true;
-    }
-    else
-    {
 
+        for(int j = 0; j < mod.faces[i].vtnPairs.size(); j++)
+        {
+            //the info for the normals and textures is in the same spot, im just not using it right now
+            oGlVertex vert = mod.vertexes[mod.faces[i].vtnPairs[j].vert];
+            glVertex3f(vert.x,vert.y, vert.z);
+        }
+        glEnd();
     }
-    if(loaded)
-    {
-        GLuint list = glGenLists(1);
-        glNewList(list, GL_COMPILE);
 
-
-        glEndList();
-        return list;
-    }
-    else
-    {
-        GLuint list = glGenLists(1);
-        glNewList(list, GL_COMPILE);
-        glColor3f(1.0f, 0.0f, 0.0f);
-        renderText( 0,  0 , 0, "ERROR LOADING FILE", QFont("Ubuntu", 30, 10, false));
-        glEndList();
-        return list;
-    }
+    glEndList();
+    return list;
 }
 
 

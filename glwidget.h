@@ -7,6 +7,7 @@
 #include <QVector>
 #include <GL/glu.h>
 #include <cmath>
+#include "Model.h"
 
 struct Vertex
 {
@@ -40,7 +41,7 @@ protected:
 
     GLuint objectID;
     QString fileName;
-
+    oGlModel mod;
     /*
     vector<glm::vec4> suzanne_vertices;
     vector<glm::vec3> suzanne_normals;

@@ -3,11 +3,11 @@
 
 #include <QGLWidget>
 #include <QFile>
-#include <QTextStream>
-#include <QVector>
+#include <QTimer>
 #include <GL/glu.h>
-#include <cmath>
 #include "Model.h"
+#include <QMouseEvent>
+#include <QTimer>
 
 struct Vertex
 {
@@ -28,32 +28,42 @@ class GLWidget : public QGLWidget
 public:
     explicit GLWidget(QWidget *parent = 0);
 
+
 protected:
     void initializeGL();
     void paintGL();
     void resizeGL(int width, int height);
 
-    void setupScene();
-    Vertex calculateNormal(Vertex a, Vertex b, Vertex c);
+
 
     GLuint loadFile(QString file);
     void drawObject(GLuint obj, float dx, float dy, float dz);
 
+    void mousePressEvent(QMouseEvent *);
+    void mouseMoveEvent(QMouseEvent *event);
+
+    void setXRotation(int angle);
+    void setYRotation(int angle);
+    void setZRotation(int angle);
+    void normalizeAngle(int *angle);
+
+private:
+    QPoint lastPos;
     GLuint objectID;
     QString fileName;
     oGlModel mod;
-    /*
-    vector<glm::vec4> suzanne_vertices;
-    vector<glm::vec3> suzanne_normals;
-    vector<GLushort> suzanne_elements;
-    */
+    QTimer *timer;
 
-private:
+    int xRot;
+    int yRot;
+    int zRot;
     
 signals:
     
 public slots:
     void setFileName(QString file);
+    void loop();
+    void setupScene(QString fileName);
     
 };
 

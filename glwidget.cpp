@@ -2,8 +2,20 @@
 
 GLWidget::GLWidget(QWidget *parent) : QGLWidget(parent)
 {
-    fileName = ":/resources/monkey.obj";
+    xRot = 0;
+    yRot = 0;
+    zRot = 0;
+    timer = new QTimer(this);
+    timer->setInterval(20);
+    connect(timer, SIGNAL(timeout()), this, SLOT(loop()));
+    timer->stop();
 }
+
+void GLWidget::loop()
+{
+    updateGL();
+}
+
 void GLWidget::initializeGL()
 {
     // Init Stuff
@@ -14,7 +26,6 @@ void GLWidget::initializeGL()
     glDepthFunc(GL_LEQUAL);
     glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
 
-    setupScene();
 }
 void GLWidget::paintGL()
 {
@@ -23,11 +34,20 @@ void GLWidget::paintGL()
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     // Show Text
+    glPushMatrix();
+    glLoadIdentity();
     glColor3f(1.0f, 1.0f, 1.0f);
     renderText( 10,  9 , 0, "Object Demo", QFont("Ubuntu", 30, 10, false));
+    renderText( -9,  9 , 0, "File:" + fileName, QFont("Ubuntu", 30, 10, false));
+    glPopMatrix();
 
+    glPushMatrix();
+    glRotated(xRot / 16.0, 1.0, 0.0, 0.0);
+    glRotated(yRot / 16.0, 0.0, 1.0, 0.0);
+    glRotated(zRot / 16.0, 0.0, 0.0, 1.0);
     glColor3f(0.0f, 1.0f, 0.0f);
     drawObject(objectID, 0, 0, 0);
+    glPopMatrix();
 }
 void GLWidget::resizeGL(int width, int height)
 {
@@ -46,15 +66,17 @@ void GLWidget::resizeGL(int width, int height)
     glTranslated(0.0, 0.0, -50.0);
 }
 
-void GLWidget::setupScene()
+void GLWidget::setupScene(QString fn)
 {
-   objectID = loadFile(fileName);
+   fileName = fn;
+   objectID = loadFile(fn);
+   timer->start();
 }
-
 
 GLuint GLWidget::loadFile(QString fn)
 {
-    mod.load("mini_obj.obj");
+    //mod.load("mini_obj.obj");
+    mod.load(fn.toUtf8().constData());
     GLuint list = glGenLists(1);
     glNewList(list, GL_COMPILE);
     for(int i = 0; i < mod.faces.size(); i++)
@@ -75,7 +97,7 @@ GLuint GLWidget::loadFile(QString fn)
         for(int j = 0; j < mod.faces[i].vtnPairs.size(); j++)
         {
             //the info for the normals and textures is in the same spot, im just not using it right now
-            oGlVertex vert = mod.vertexes[mod.faces[i].vtnPairs[j].vert];
+            oGlVertex vert = mod.vertexes[mod.faces[i].vtnPairs[j].vert-1];
             glVertex3f(vert.x,vert.y, vert.z);
         }
         glEnd();
@@ -97,26 +119,55 @@ void GLWidget::setFileName(QString file)
 {
     fileName = file;
 }
-Vertex GLWidget::calculateNormal(Vertex a, Vertex b, Vertex c)
+
+void GLWidget::mousePressEvent(QMouseEvent *event)
 {
-    /* calculate Vector1 and Vector2 */
-    float va[3], vb[3], vr[3], val;
+    lastPos = event->pos();
+    setCursor(Qt::ClosedHandCursor);
+}
+void GLWidget::mouseMoveEvent(QMouseEvent *event)
+{
+    setCursor(Qt::OpenHandCursor);
+    int dx = event->x() - lastPos.x();
+    int dy = event->y() - lastPos.y();
 
-    va[0] = a.x - b.x;
-    va[1] = a.y - b.y;
-    va[2] = a.z - b.z;
-
-    vb[0] = a.x - c.x;
-    vb[1] = a.y - c.y;
-    vb[2] = a.z - c.z;
-
-    /* cross product */
-    vr[0] = va[1] * vb[2] - vb[1] * va[2];
-    vr[1] = vb[0] * va[2] - va[0] * vb[2];
-    vr[2] = va[0] * vb[1] - vb[0] * va[1];
-
-    /* normalization factor */
-    val = sqrt( vr[0]*vr[0] + vr[1]*vr[1] + vr[2]*vr[2] );
-
-    return ((struct Vertex) {vr[0]/val, vr[1]/val, vr[2]/val});
+    if (event->buttons() & Qt::LeftButton) {
+        setXRotation(xRot + 8 * dy);
+        setYRotation(yRot + 8 * dx);
+    } else if (event->buttons() & Qt::RightButton) {
+        setXRotation(xRot + 8 * dy);
+        setZRotation(zRot + 8 * dx);
+    }
+    lastPos = event->pos();
+}
+void GLWidget::setXRotation(int angle)
+{
+    normalizeAngle(&angle);
+    if (angle != xRot) {
+        xRot = angle;
+        updateGL();
+    }
+}
+void GLWidget::setYRotation(int angle)
+{
+    normalizeAngle(&angle);
+    if (angle != yRot) {
+        yRot = angle;
+        updateGL();
+    }
+}
+void GLWidget::setZRotation(int angle)
+{
+    normalizeAngle(&angle);
+    if (angle != zRot) {
+        zRot = angle;
+        updateGL();
+    }
+}
+void GLWidget::normalizeAngle(int *angle)
+{
+    while (*angle < 0)
+        *angle += 360 * 16;
+    while (*angle > 360 * 16)
+        *angle -= 360 * 16;
 }

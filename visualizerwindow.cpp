@@ -6,6 +6,7 @@ VisualizerWindow::VisualizerWindow(QWidget *parent, QString newFile) : QMainWind
     ui->setupUi(this);
     showFullScreen();
     filename = newFile;
+    ui->glWidget->setupScene(filename);
 }
 
 VisualizerWindow::~VisualizerWindow()

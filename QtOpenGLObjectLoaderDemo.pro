@@ -13,11 +13,13 @@ TEMPLATE = app
 SOURCES += main.cpp\
         loaderwindow.cpp \
     visualizerwindow.cpp \
-    glwidget.cpp
+    glwidget.cpp \
+    Model.cpp
 
 HEADERS  += loaderwindow.h \
     visualizerwindow.h \
-    glwidget.h
+    glwidget.h \
+    Model.h
 
 FORMS    += loaderwindow.ui \
     visualizerwindow.ui
@@ -26,5 +28,9 @@ FORMS    += loaderwindow.ui \
     LIBS += -lglut -lGL -lGLU
 }
 
-RESOURCES += \
-    resources.qrc
+#RESOURCES += \
+#    resources.qrc
+
+OTHER_FILES += \
+    mini_obj.obj \
+    untitled.obj

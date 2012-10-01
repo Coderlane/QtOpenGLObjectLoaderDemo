@@ -29,6 +29,12 @@ void GLWidget::initializeGL()
     glDepthFunc(GL_LEQUAL);
     glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
 
+
+    glEnable(GL_LIGHTING);
+    glEnable(GL_LIGHT0);
+    glEnable(GL_DEPTH_TEST);
+    glLightfv(GL_LIGHT1, GL_AMBIENT,  LightAmbient);
+
 }
 void GLWidget::paintGL()
 {
@@ -36,11 +42,18 @@ void GLWidget::paintGL()
     qglClearColor(QColor(Qt::black));
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+
+    glPushMatrix();
+    glTranslated(0.0,0.0,0.0);
+    glLightfv(GL_LIGHT1, GL_DIFFUSE,  LightDiffuse);
+    glLightfv(GL_LIGHT1, GL_POSITION, LightPosition);
+    glPopMatrix();
+
     // Show Text
     glPushMatrix();
     glLoadIdentity();
     glColor3f(1.0f, 1.0f, 1.0f);
-    renderText( 10,  9 , 0, "Object Demo", QFont("Ubuntu", 30, 10, false));
+    //renderText( 10,  9 , 0, "Object Demo", QFont("Ubuntu", 30, 10, false));
     renderText( -9,  9 , 0, "File:" + fileName, QFont("Ubuntu", 30, 10, false));
     glPopMatrix();
 
@@ -88,6 +101,10 @@ GLuint GLWidget::loadFile(QString fn)
 
     GLuint list = glGenLists(1);
     glNewList(list, GL_COMPILE);
+
+    // TEMPORARY
+    glMaterialfv(GL_FRONT, GL_AMBIENT_AND_DIFFUSE, reflectance);
+
     for(int i = 0; i < mod.faces.size(); i++)
     {
         switch(mod.faces[i].vtnPairs.size())
@@ -113,8 +130,6 @@ GLuint GLWidget::loadFile(QString fn)
         {
             //the info for the normals and textures is in the same spot, im just not using it right now
 
-
-
             if(mod.faces[i].vtnPairs[j].tex > 0)
             {
                 oGlVertex tex = mod.textureCoords[mod.faces[i].vtnPairs[j].tex-1];
@@ -123,9 +138,6 @@ GLuint GLWidget::loadFile(QString fn)
 
             oGlVertex vert = mod.vertexes[mod.faces[i].vtnPairs[j].vert-1];
             glVertex3f(vert.x,vert.y, vert.z);
-
-
-
 
         }
         glEnd();

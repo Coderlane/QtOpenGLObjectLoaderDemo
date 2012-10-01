@@ -3,6 +3,9 @@
 
 #include <QMainWindow>
 
+
+const float MAX_ZOOM = 5;
+
 namespace Ui {
 class VisualizerWindow;
 }
@@ -14,7 +17,11 @@ class VisualizerWindow : public QMainWindow
 public:
     explicit VisualizerWindow(QWidget *parent = 0, QString filename = "");
     ~VisualizerWindow();
-    
+
+protected:
+    void keyPressEvent(QKeyEvent *event);
+    void keyReleaseEvent(QKeyEvent *event);
+
 private:
     QString filename;
     Ui::VisualizerWindow *ui;

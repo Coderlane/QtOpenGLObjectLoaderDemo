@@ -28,9 +28,6 @@ FORMS    += loaderwindow.ui \
     LIBS += -lglut -lGL -lGLU
 }
 
-#RESOURCES += \
-#    resources.qrc
-
 OTHER_FILES += \
     mini_obj.obj \
     untitled.obj

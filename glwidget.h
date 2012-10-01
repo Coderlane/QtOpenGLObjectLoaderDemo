@@ -8,39 +8,27 @@
 #include "Model.h"
 #include <QMouseEvent>
 #include <QTimer>
+#include <QMessageBox>
 
-struct Vertex
-{
-    float x;
-    float y;
-    float z;
-};
-struct Triangle
-{
-    Vertex a;
-    Vertex b;
-    Vertex c;
-};
 
 class GLWidget : public QGLWidget
 {
     Q_OBJECT
 public:
     explicit GLWidget(QWidget *parent = 0);
-
+    void setZoom(float zoom);
 
 protected:
     void initializeGL();
     void paintGL();
     void resizeGL(int width, int height);
 
-
-
     GLuint loadFile(QString file);
     void drawObject(GLuint obj, float dx, float dy, float dz);
 
     void mousePressEvent(QMouseEvent *);
     void mouseMoveEvent(QMouseEvent *event);
+
 
     void setXRotation(int angle);
     void setYRotation(int angle);
@@ -57,9 +45,12 @@ private:
     int xRot;
     int yRot;
     int zRot;
+
+    float zoom;
     
 signals:
-    
+    void emitClose();
+
 public slots:
     void setFileName(QString file);
     void loop();

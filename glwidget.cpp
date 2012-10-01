@@ -5,8 +5,9 @@ GLWidget::GLWidget(QWidget *parent) : QGLWidget(parent)
     xRot = 0;
     yRot = 0;
     zRot = 0;
+    zoom = 0;
     timer = new QTimer(this);
-    timer->setInterval(20);
+    timer->setInterval(60);
     connect(timer, SIGNAL(timeout()), this, SLOT(loop()));
     timer->stop();
 }
@@ -40,6 +41,8 @@ void GLWidget::paintGL()
     renderText( 10,  9 , 0, "Object Demo", QFont("Ubuntu", 30, 10, false));
     renderText( -9,  9 , 0, "File:" + fileName, QFont("Ubuntu", 30, 10, false));
     glPopMatrix();
+
+    glTranslated(0.0, 0.0, zoom);
 
     glPushMatrix();
     glRotated(xRot / 16.0, 1.0, 0.0, 0.0);
@@ -140,6 +143,12 @@ void GLWidget::mouseMoveEvent(QMouseEvent *event)
     }
     lastPos = event->pos();
 }
+
+void GLWidget::setZoom(float z)
+{
+    zoom = z;
+}
+
 void GLWidget::setXRotation(int angle)
 {
     normalizeAngle(&angle);

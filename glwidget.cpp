@@ -43,7 +43,7 @@ void GLWidget::resizeGL(int width, int height)
     gluPerspective(30.0f,ratio,0.1f,100.0f);
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
-    glTranslated(0.0, 0.0, -50);
+    glTranslated(0.0, 0.0, -50.0);
 }
 
 void GLWidget::setupScene()
@@ -54,7 +54,7 @@ void GLWidget::setupScene()
 
 GLuint GLWidget::loadFile(QString fn)
 {
-    mod.load(fn.toUtf8().constData());
+    mod.load("mini_obj.obj");
     GLuint list = glGenLists(1);
     glNewList(list, GL_COMPILE);
     for(int i = 0; i < mod.faces.size(); i++)

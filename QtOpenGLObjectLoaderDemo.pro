@@ -32,4 +32,5 @@ FORMS    += loaderwindow.ui \
 #    resources.qrc
 
 OTHER_FILES += \
-    mini_obj.obj
+    mini_obj.obj \
+    untitled.obj

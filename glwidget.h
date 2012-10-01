@@ -52,7 +52,6 @@ signals:
     void emitClose();
 
 public slots:
-    void setFileName(QString file);
     void loop();
     void setupScene(QString fileName);
     

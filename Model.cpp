@@ -16,7 +16,13 @@ void oGlModel::load(string filename)
 	vector<string> lineItems;
 	ifstream objFile(filename.c_str());
 
+    objFile.seekg (0, ios::end);
+    int length = objFile.tellg();
+    objFile.seekg (0, ios::beg);
 
+    vertexes.reserve((int)length / 25);
+    faces.reserve((int)length / 25);
+    textureCoords.reserve((int)length / 25);
 
 	while(objFile.good())
 	{
@@ -86,6 +92,10 @@ void oGlModel::load(string filename)
 			}	
 			faces.push_back(face);
 		}
+        else if(lineItems[0] == "mtllib")
+        {
+            material = lineItems[1];
+        }
 	}
 }
 
@@ -106,6 +116,37 @@ vector<string> oGlModel::splitString(string s, char delim)
 
 	}
 	retTok.push_back(temp);
-	return retTok;
+    return retTok;
 
+}
+
+oGlVertex oGlModel::calcNormal(oGlVertex a, oGlVertex b, oGlVertex c)
+{
+    /*
+    So for a triangle p1, p2, p3, if the vector U = p2 - p1 and the vector V = p3 - p1 then the normal N = U X V and can be calculated by:
+
+    Nx = UyVz - UzVy
+
+    Ny = UzVx - UxVz
+
+    Nz = UxVy - UyVx
+            */
+
+    oGlVertex norm;
+    oGlVertex U;
+    oGlVertex V;
+
+    U.x = b.x  - a.x;
+    U.y = b.y  - a.y;
+    U.z = b.z  - a.z;
+
+    V.x = c.x  - a.x;
+    V.y = c.y  - a.y;
+    V.z = c.z  - a.z;
+
+    norm.x = (U.y * V.z) - (U.z * V.y);
+    norm.y = (U.z * V.x) - (U.x * V.z);
+    norm.z = (U.x * V.y) - (U.y * V.x);
+
+    return norm;
 }

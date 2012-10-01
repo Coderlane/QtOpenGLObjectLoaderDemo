@@ -81,10 +81,10 @@ void GLWidget::resizeGL(int width, int height)
     glViewport(0, 0, width, height);
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
-    gluPerspective(30.0f,ratio,0.1f,100.0f);
+    gluPerspective(30.0f,ratio,0.1f,500.0f);
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
-    glTranslated(0.0, 0.0, -50.0);
+    glTranslated(0.0, -50.0, -250.0);
 }
 
 void GLWidget::setupScene(QString fn)
@@ -123,6 +123,11 @@ GLuint GLWidget::loadFile(QString fn)
         if(mod.faces[i].vtnPairs[0].norm > 0)
         {
             oGlVertex norm = mod.normalVectors[mod.faces[i].vtnPairs[0].norm-1];
+            glNormal3f(norm.x, norm.y, norm.z);
+        }
+        else
+        {
+            oGlVertex norm = mod.calcNormal(mod.vertexes[mod.faces[i].vtnPairs[0].vert-1], mod.vertexes[mod.faces[i].vtnPairs[1].vert-1],mod.vertexes[mod.faces[i].vtnPairs[2].vert-1]);
             glNormal3f(norm.x, norm.y, norm.z);
         }
 

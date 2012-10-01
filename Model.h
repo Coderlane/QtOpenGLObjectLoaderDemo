@@ -14,6 +14,7 @@ using std::cout;
 using std::string;
 using std::vector;
 using std::ifstream;
+using std::ios;
 
 //Vertex
 typedef struct _oGlVertex
@@ -54,7 +55,8 @@ public:
 	vector<oGlVertex> normalVectors;
 	vector<oGlFace> faces;
 
-	
+    string material;
+    oGlVertex calcNormal(oGlVertex a, oGlVertex b, oGlVertex c);
 
 };
 

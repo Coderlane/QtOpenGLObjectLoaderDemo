@@ -117,10 +117,13 @@ GLuint GLWidget::loadFile(QString fn)
                 //apply materiel.
                 materialIndex++;
                 int tempI = mod.matIndexes[materialIndex].matIndex;
+                if(tempI != -1)
+                {
                 glMaterialfv(GL_FRONT, GL_AMBIENT,OGVTF mod.materials[tempI].Ka);
                 glMaterialfv(GL_FRONT, GL_DIFFUSE, OGVTF mod.materials[tempI].Kd);
                 glMaterialfv(GL_FRONT, GL_SPECULAR,OGVTF mod.materials[tempI].Ks);
                 glMaterialf(GL_FRONT, GL_SHININESS, mod.materials[tempI].Ns);
+                }
             }
         }
         //

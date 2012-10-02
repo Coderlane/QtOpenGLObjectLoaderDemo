@@ -85,15 +85,15 @@ void GLWidget::resizeGL(int width, int height)
     gluPerspective(30.0f,ratio,0.1f,800.0f);
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
-    glTranslated(0.0, -50.0, -250.0);
+    glTranslated(0.0, 0.0, -50.0);
 }
 
 void GLWidget::setupScene(QString fn)
 {
-   // Set the filename and start the timer
-   fileName = fn;
-   objectID = loadFile(fn);
-   timer->start();
+    // Set the filename and start the timer
+    fileName = fn;
+    objectID = loadFile(fn);
+    timer->start();
 }
 GLuint GLWidget::loadFile(QString fn)
 {
@@ -103,22 +103,40 @@ GLuint GLWidget::loadFile(QString fn)
     GLuint list = glGenLists(1);
     glNewList(list, GL_COMPILE);
 
+    int materialIndex = -1;
+
     // TEMPORARY
-    glMaterialfv(GL_FRONT, GL_AMBIENT_AND_DIFFUSE, reflectance);
+    //glMaterialfv(GL_FRONT, GL_AMBIENT, reflectance);
 
     for(int i = 0; i < mod.faces.size(); i++)
     {
+        //check for proper material to use
+        int qwe = mod.matIndexes.size();
+        if(materialIndex < qwe - 1)
+        {
+            if(i >= mod.matIndexes[materialIndex+1].fIndex)
+            {
+                materialIndex++;
+                int tempI = mod.matIndexes[materialIndex].matIndex;
+                glMaterialfv(GL_FRONT, GL_AMBIENT,(GLfloat*) &(mod.materials[tempI].Ka));
+                glMaterialfv(GL_FRONT, GL_DIFFUSE,(GLfloat*) &(mod.materials[tempI].Kd));
+                glMaterialfv(GL_FRONT, GL_SPECULAR,(GLfloat*) &(mod.materials[tempI].Ks));
+                glMaterialf(GL_FRONT, GL_SHININESS, mod.materials[tempI].Ns);
+            }
+        }
+        //
+
         switch(mod.faces[i].vtnPairs.size())
         {
-            case 3:
-                glBegin(GL_TRIANGLES);
-                break;
-            case 4:
-                glBegin(GL_QUADS);
-                break;
-            case 5:
-                glBegin(GL_POLYGON);
-                break;
+        case 3:
+            glBegin(GL_TRIANGLES);
+            break;
+        case 4:
+            glBegin(GL_QUADS);
+            break;
+        case 5:
+            glBegin(GL_POLYGON);
+            break;
         }
 
         if(mod.faces[i].vtnPairs[0].norm > 0)

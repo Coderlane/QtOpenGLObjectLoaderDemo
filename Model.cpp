@@ -2,125 +2,195 @@
 
 oGlModel::oGlModel()
 {
-	
+
 }
 
 oGlModel::oGlModel(string filename)
 {
-	load(filename);
+    load(filename);
+}
+
+void oGlModel::loadMaterial(string matFile)
+{
+    ifstream matf(matFile.c_str());
+    string line;
+    oGlMatInfo material;
+    material.name = "";
+    while(matf.good())
+    {
+        getline(matf, line);
+        vector<string> lineItems = splitString(line, ' ');
+        if(lineItems[0] == "newmtl")
+        {
+            if(material.name != "")
+                materials.push_back(material);
+            material.name = lineItems[1];
+            material.illum = 0;
+            material.Ns = 0;
+        }
+        else if(lineItems[0] ==  "Ka")
+        {
+            material.Ka.x = atof(lineItems[1].c_str());
+            material.Ka.y = atof(lineItems[2].c_str());
+            material.Ka.z = atof(lineItems[3].c_str());
+        }
+        else if(lineItems[0] == "Kd")
+        {
+            material.Kd.x = atof(lineItems[1].c_str());
+            material.Kd.y = atof(lineItems[2].c_str());
+            material.Kd.z = atof(lineItems[3].c_str());
+        }
+        else if(lineItems[0] ==  "Ks")
+        {
+            material.Ks.x = atof(lineItems[1].c_str());
+            material.Ks.y = atof(lineItems[2].c_str());
+            material.Ks.z = atof(lineItems[3].c_str());
+        }
+        else if(lineItems[0] == "illum")
+        {
+            material.illum = atoi(lineItems[1].c_str());
+        }
+        else if(lineItems[0] == "Ns")
+        {
+            material.Ns = atof(lineItems[1].c_str());
+        }
+    }
+    materials.push_back(material);
 }
 
 void oGlModel::load(string filename)
 {
-	string line;
-	vector<string> lineItems;
-	ifstream objFile(filename.c_str());
+    string line;
+    vector<string> lineItems;
+    ifstream objFile(filename.c_str());
 
+    //instead of doing this, just count how many of each thing there is and THEN resize, and load
     objFile.seekg (0, ios::end);
     int length = objFile.tellg();
     objFile.seekg (0, ios::beg);
-
     vertexes.reserve((int)length / 25);
     faces.reserve((int)length / 25);
     textureCoords.reserve((int)length / 25);
 
-	while(objFile.good())
-	{
-		getline(objFile, line);
+    while(objFile.good())
+    {
+        getline(objFile, line);
 
-		lineItems = splitString(line, ' ');
+        lineItems = splitString(line, ' ');
 
-		if(lineItems[0] == "v")
-		{
-			oGlVertex v;
-			
-			v.x = atof(lineItems[1].c_str());
-			v.y = atof(lineItems[2].c_str());
-			v.z = atof(lineItems[3].c_str());
-						
-			vertexes.push_back(v);	
-		}
-		else if (lineItems[0] == "vn")
-		{
-			oGlVertex v;
-			
-			v.x = atof(lineItems[1].c_str());
-			v.y = atof(lineItems[2].c_str());
-			v.z = atof(lineItems[3].c_str());
-			
-			normalVectors.push_back(v);
-		}
-		else if(lineItems[0] == "vt")
-		{
-			oGlVertex v;
-			
-			v.x = atof(lineItems[1].c_str());
-			v.y = atof(lineItems[2].c_str());
-			v.z = atof(lineItems[3].c_str());
-			
-			textureCoords.push_back(v);
-			
-		}
-		else if(lineItems[0] == "f")
-		{
-			oGlFace face;
-			for(int i = 1; i < lineItems.size(); i++)
-			{
-				vector<string> faceVs = splitString(lineItems[i],'/');
-				oGlVTN vtn;
+        if(lineItems[0] == "v")
+        {
+            oGlVertex v;
+
+            v.x = atof(lineItems[1].c_str());
+            v.y = atof(lineItems[2].c_str());
+            v.z = atof(lineItems[3].c_str());
+
+            vertexes.push_back(v);
+        }
+        else if (lineItems[0] == "vn")
+        {
+            oGlVertex v;
+
+            v.x = atof(lineItems[1].c_str());
+            v.y = atof(lineItems[2].c_str());
+            v.z = atof(lineItems[3].c_str());
+
+            normalVectors.push_back(v);
+        }
+        else if(lineItems[0] == "vt")
+        {
+            oGlVertex v;
+
+            v.x = atof(lineItems[1].c_str());
+            v.y = atof(lineItems[2].c_str());
+            v.z = atof(lineItems[3].c_str());
+
+            textureCoords.push_back(v);
+
+        }
+        else if(lineItems[0] == "f")
+        {
+            oGlFace face;
+            for(int i = 1; i < lineItems.size(); i++)
+            {
+                vector<string> faceVs = splitString(lineItems[i],'/');
+                oGlVTN vtn;
                 if(lineItems[i] == "")
                     continue;
-				switch(faceVs.size())
-				{
-					case 3:
-						vtn.norm = atoi(faceVs[2].c_str());	
-						vtn.vert = atoi(faceVs[0].c_str());
-						vtn.tex = atoi(faceVs[1].c_str());
-						if(faceVs[1] == "")
-							vtn.tex = -1;
-						break;
-					case 2:	
-						vtn.vert = atoi(faceVs[0].c_str());
-						vtn.tex = atoi(faceVs[1].c_str());
-						vtn.norm = -1;
-						break;
-					case 1:
-						vtn.vert = atoi(faceVs[0].c_str());
-						vtn.norm = -1;
-						vtn.tex = -1;
-						break;
-				}
-				face.vtnPairs.push_back(vtn);
-			}	
-			faces.push_back(face);
-		}
+                switch(faceVs.size())
+                {
+                case 3:
+                    vtn.norm = atoi(faceVs[2].c_str());
+                    vtn.vert = atoi(faceVs[0].c_str());
+                    vtn.tex = atoi(faceVs[1].c_str());
+                    if(faceVs[1] == "")
+                        vtn.tex = -1;
+                    break;
+                case 2:
+                    vtn.vert = atoi(faceVs[0].c_str());
+                    vtn.tex = atoi(faceVs[1].c_str());
+                    vtn.norm = -1;
+                    break;
+                case 1:
+                    vtn.vert = atoi(faceVs[0].c_str());
+                    vtn.norm = -1;
+                    vtn.tex = -1;
+                    break;
+                }
+                face.vtnPairs.push_back(vtn);
+            }
+            faces.push_back(face);
+        }
         else if(lineItems[0] == "mtllib")
         {
-            material = lineItems[1];
+            int strI = filename.size() - 1;
+            for(;strI >= 0 && filename[strI] != '/'; strI--);
+            string nf = filename.substr(0, strI+1);
+            nf += lineItems[1];
+            loadMaterial(nf);
         }
-	}
+        else if(lineItems[0] == "usemtl")
+        {
+            int mi = -1;
+            for(int ti = 0; ti < materials.size(); ti++)
+            {
+                if(materials[ti].name == lineItems[1])
+                {
+                    mi = ti;
+                    break;
+                }
+            }
+            oGlMatIndex matI;
+            matI.matIndex = mi;
+            matI.fIndex = faces.size();
+            matIndexes.push_back(matI);
+        }
+    }
 }
 
 vector<string> oGlModel::splitString(string s, char delim)
 {
-	vector<string> retTok;
-	
-	string temp;
-	for(int i = 0; i < s.length(); i++)
-	{
-		if(s[i] != delim)
-			temp += s[i];
-		else
-		{	
-			retTok.push_back(temp);
-			temp = "";
-		}
+    vector<string> retTok;
 
-	}
-	retTok.push_back(temp);
+    string temp;
+    for(int i = 0; i < s.length(); i++)
+    {
+        if(s[i] != delim)
+            temp += s[i];
+        else
+        {
+            retTok.push_back(temp);
+            temp = "";
+        }
+
+    }
+    retTok.push_back(temp);
     return retTok;
 
 }
+
+
 
 oGlVertex oGlModel::calcNormal(oGlVertex a, oGlVertex b, oGlVertex c)
 {

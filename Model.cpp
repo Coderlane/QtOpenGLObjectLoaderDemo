@@ -10,6 +10,7 @@ oGlModel::oGlModel(string filename)
     load(filename);
 }
 
+//Load a .mtl file into a struct and add it to the list
 void oGlModel::loadMaterial(string matFile)
 {
     ifstream matf(matFile.c_str());
@@ -58,6 +59,7 @@ void oGlModel::loadMaterial(string matFile)
     materials.push_back(material);
 }
 
+//Load a .obj file to the class
 void oGlModel::load(string filename)
 {
     string line;
@@ -169,6 +171,7 @@ void oGlModel::load(string filename)
     }
 }
 
+//split a string by a given delimiter, i just decided this was nice to have here
 vector<string> oGlModel::splitString(string s, char delim)
 {
     vector<string> retTok;
@@ -190,8 +193,7 @@ vector<string> oGlModel::splitString(string s, char delim)
 
 }
 
-
-
+//calculate the normal vector for a given face, cross products, boo yah
 oGlVertex oGlModel::calcNormal(oGlVertex a, oGlVertex b, oGlVertex c)
 {
     /*

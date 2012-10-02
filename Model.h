@@ -2,6 +2,7 @@
 #define __OG_MODEL_LOADER__
 
 #define PTYPE float
+#define OGVTF (GLfloat*)&
 
 #include <fstream>
 #include <vector>
@@ -17,7 +18,7 @@ using std::vector;
 using std::ifstream;
 using std::ios;
 
-//Vertex
+//Vertex (protip, can be passed as a GLfloat array by using the OGVTF constant, ie glVertex3fv(OGVTF vert); )
 typedef struct _oGlVertex
 {
 	PTYPE x;
@@ -42,13 +43,6 @@ typedef struct _oGlMatInfo
     oGlVertex Ks;
     int illum;
     PTYPE Ns;
-    /*
-    newmtl shinyred
-    Ka  0.1986  0.0000  0.0000
-    Kd  0.5922  0.0166  0.0000
-    Ks  0.5974  0.2084  0.2084
-    illum 2
-    Ns 100.2237*/
 }oGlMatInfo;
 
 typedef struct _oGlMatIndex

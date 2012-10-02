@@ -105,22 +105,21 @@ GLuint GLWidget::loadFile(QString fn)
 
     int materialIndex = -1;
 
-    // TEMPORARY
-    //glMaterialfv(GL_FRONT, GL_AMBIENT, reflectance);
+
 
     for(int i = 0; i < mod.faces.size(); i++)
     {
         //check for proper material to use
-        int qwe = mod.matIndexes.size();
-        if(materialIndex < qwe - 1)
+        if(materialIndex < (int)mod.matIndexes.size() - 1) //typecasting unsigned to signed int
         {
             if(i >= mod.matIndexes[materialIndex+1].fIndex)
             {
+                //apply materiel.
                 materialIndex++;
                 int tempI = mod.matIndexes[materialIndex].matIndex;
-                glMaterialfv(GL_FRONT, GL_AMBIENT,(GLfloat*) &(mod.materials[tempI].Ka));
-                glMaterialfv(GL_FRONT, GL_DIFFUSE,(GLfloat*) &(mod.materials[tempI].Kd));
-                glMaterialfv(GL_FRONT, GL_SPECULAR,(GLfloat*) &(mod.materials[tempI].Ks));
+                glMaterialfv(GL_FRONT, GL_AMBIENT,OGVTF mod.materials[tempI].Ka);
+                glMaterialfv(GL_FRONT, GL_DIFFUSE, OGVTF mod.materials[tempI].Kd);
+                glMaterialfv(GL_FRONT, GL_SPECULAR,OGVTF mod.materials[tempI].Ks);
                 glMaterialf(GL_FRONT, GL_SHININESS, mod.materials[tempI].Ns);
             }
         }
@@ -134,7 +133,7 @@ GLuint GLWidget::loadFile(QString fn)
         case 4:
             glBegin(GL_QUADS);
             break;
-        case 5:
+        default:
             glBegin(GL_POLYGON);
             break;
         }
@@ -142,28 +141,26 @@ GLuint GLWidget::loadFile(QString fn)
         if(mod.faces[i].vtnPairs[0].norm > 0)
         {
             oGlVertex norm = mod.normalVectors[mod.faces[i].vtnPairs[0].norm-1];
-            glNormal3f(norm.x, norm.y, norm.z);
+            glNormal3fv(OGVTF norm);
         }
         else
         {
             oGlVertex norm = mod.calcNormal(mod.vertexes[mod.faces[i].vtnPairs[0].vert-1], mod.vertexes[mod.faces[i].vtnPairs[1].vert-1],mod.vertexes[mod.faces[i].vtnPairs[2].vert-1]);
-            glNormal3f(norm.x, norm.y, norm.z);
+            glNormal3fv(OGVTF norm);
         }
 
         for(int j = 0; j < mod.faces[i].vtnPairs.size(); j++)
         {
-            //the info for the normals and textures is in the same spot, im just not using it right now
-
             if(mod.faces[i].vtnPairs[j].tex > 0)
             {
                 oGlVertex tex = mod.textureCoords[mod.faces[i].vtnPairs[j].tex-1];
-                glTexCoord3f(tex.x, tex.y, tex.z);
+                glTexCoord3fv(OGVTF tex);
             }
-
             oGlVertex vert = mod.vertexes[mod.faces[i].vtnPairs[j].vert-1];
-            glVertex3f(vert.x,vert.y, vert.z);
+            glVertex3fv(OGVTF vert);
 
         }
+
         glEnd();
     }
 
